@@ -1,6 +1,6 @@
 # Fractal calculation cluster
 
-## Dependecies
+## Dependecies (Packages names listed for pacman based linuxes)
   - **OpenCL runtime** (One per platform type)
     - NVIDIA: *opencl-nvidia*
     - AMD:    *opencl-mesa*
@@ -9,3 +9,4 @@
   - **OpenCL Headers:** *opencl-headers*
   - **OpenCL Platform Info (Additional):** *clinfo*
   - **OpenMPI:** *openmpi*
+  - **Creating PNG:** *libpng*
