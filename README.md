@@ -1,10 +1,14 @@
 # Fractal calculation cluster
 
-## Dependecies (Packages names listed for pacman based linuxes)
+## Dependecies (Packages names listed for pacman based linux)
   - **OpenCL runtime** (One per platform type)
-    - NVIDIA: *opencl-nvidia*
-    - AMD:    *opencl-mesa*
-    - Intel:  *intel-compute-runtime*
+    - **CPU:**
+      - Intel (AUR): *intel-opencl-runtime*
+      - AMD (AUR):   *amdapp-sdk*
+    - **GPU:**
+      - NVIDIA: *opencl-nvidia*
+      - Radeon: *opencl-mesa*
+      - Intel:  *intel-compute-runtime*
   - **OpenCL ICD loader:** *ocl-icd*
   - **OpenCL Headers:** *opencl-headers*
   - **OpenCL Platform Info (Additional):** *clinfo*

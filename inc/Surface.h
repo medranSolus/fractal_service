@@ -24,6 +24,7 @@ class Surface
         constexpr uint32_t GetHeight() const noexcept { return height; }
         inline Color* GetRow(uint32_t y) const noexcept { return &data[width * y]; }
         inline Color& GetPixel(uint32_t x, uint32_t y) noexcept { return data[width * y + x]; }
+        inline const Color* GetData() const noexcept { return data.get(); }
     };
 
     uint32_t height;
@@ -36,8 +37,9 @@ public:
     inline Surface(Surface && surf) noexcept : height(surf.height), images(std::move(surf.images)) {}
     Surface& operator=(Surface && surf) noexcept;
 
-    inline uint32_t GetWidth() const noexcept { return images.at(0).GetWidth(); }
     constexpr uint32_t GetHeight() const noexcept { return height; }
+    inline uint32_t GetWidth() const noexcept { return images.at(0).GetWidth(); }
+    inline const Color* GetData(uint32_t i) const noexcept { return images.at(i).GetData(); }
 
     Color& GetPixel(uint32_t x, uint32_t y) noexcept;
     bool Append(Surface && surf) noexcept;

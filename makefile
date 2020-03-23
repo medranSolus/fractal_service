@@ -12,6 +12,9 @@ bin/frac_cluster: $(OBJ)
 
 obj/%.obj: src/%.cpp
 	$(CXX) $(CXX_FLAGS) $< -o $@
+	
+obj/%.obj: src/MPI/%.cpp
+	$(CXX) $(CXX_FLAGS) -I inc/MPI $< -o $@
 
 .PHONY: clean
 clean:
