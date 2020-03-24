@@ -4,11 +4,17 @@
 #include <algorithm>
 #include <cstdio>
 
+Surface::Image::Image(uint32_t width, uint32_t height) noexcept
+    : width(width), height(height)
+{
+    data = std::make_unique<Color[]>(width * height);
+}
+
 Surface::Image::Image(uint32_t width, uint32_t height, Color default_color) noexcept
     : width(width), height(height)
 {
     uint64_t size = width * height;
-    data = std::make_unique<Color[]>(width * height);
+    data = std::make_unique<Color[]>(size);
     std::fill_n(data.get(), size, default_color);
 }
 
@@ -18,6 +24,11 @@ Surface::Image& Surface::Image::operator=(Image && img) noexcept
     height = img.height;
     data = std::move(img.data);
     return *this;
+}
+
+Surface::Surface(uint32_t width, uint32_t height) noexcept : height(height)
+{
+    images.emplace_back(width, height);
 }
 
 Surface::Surface(uint32_t width, uint32_t height, Color default_color) noexcept : height(height)

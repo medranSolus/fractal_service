@@ -7,8 +7,8 @@ class Fractal
 public:
     Fractal() = delete;
     
-    static Surface Mandelbrot(const uint32_t size, const Window<uint32_t>& work_space,
-        Window<double> fractal, const double escape_r, const uint16_t max_iteration) noexcept;
+    static Surface Mandelbrot(uint32_t width, uint32_t height, const Window<uint32_t>& work_space,
+        Window<double> fractal, double escape_r, uint16_t max_iteration, uint16_t color_offset) noexcept;
 };
 
 // triple_mandelbrot: -1.5, 1.5, -1.5, 1.5
