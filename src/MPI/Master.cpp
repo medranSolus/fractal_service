@@ -18,24 +18,21 @@ namespace MPI
     
     int Master::Run()
     {
-        if (true)
-        {
-            JobRequest request;
-            request.iterations = 550;
-            request.color_offset = 5;
-            request.token = 15;
-            request.job_id = 0;
-            request.width = 1000;
-            request.height = 1000;
-            request.work_space = { 0, request.width, 0, request.height };
-            SendJob(1, request);
-            JobResponse response = ReceiveImage();
-            response.image.Save("bin/" + std::to_string(response.token) + "_" + std::to_string(response.job_id));
-        }
-        else
-        {
-            Fractal::Mandelbrot(2000, 2000, { 0, 2000, 0, 2000 }, { -2.0, 1.0, -1.5, 1.5 }, 2.0, 550, 5).Save("bin/mandelbrot");
-        }
+        JobRequest request;
+        request.iterations = 550;
+        request.color_offset = 5;
+        request.power = 2;
+        request.token = 15;
+        request.job_id = 0;
+        request.width = 1000;
+        request.height = 1000;
+        request.zoom = 0.01;
+        request.offset_x = -1.75;
+        request.offset_y = 0.0;
+        request.work_space = { 0, request.width, 0, request.height };
+        SendJob(1, request);
+        JobResponse response = ReceiveImage();
+        response.image.Save("bin/" + std::to_string(response.token) + "_" + std::to_string(response.job_id));
         return 0;
     }
 }

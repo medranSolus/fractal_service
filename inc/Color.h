@@ -20,5 +20,4 @@ public:
     constexpr uint8_t GetR() const noexcept { return r; }
     constexpr uint8_t GetG() const noexcept { return g; }
     constexpr uint8_t GetB() const noexcept { return b; }
-    constexpr uint32_t GetRGB() const noexcept { return r | (static_cast<uint32_t>(g) << 8) | (static_cast<uint32_t>(b) << 16); }
 };

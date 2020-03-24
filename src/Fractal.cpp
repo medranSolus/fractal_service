@@ -1,17 +1,17 @@
 #include "Fractal.h"
 #include <limits>
 #include <complex>
-typedef std::complex<double> Complex;
+typedef std::complex<long double> Complex;
 
 Surface Fractal::Mandelbrot(uint32_t width, uint32_t height, const Window<uint32_t>& work_space,
-    Window<double> fractal, double escape_r, uint16_t max_iteration, uint16_t color_offset) noexcept
+    Window<long double> fractal, long double escape_r, uint16_t max_iteration, uint16_t color_offset, int power) noexcept
 {
-    const double ratio = static_cast<double>(height) / width;
+    const long double ratio = static_cast<long double>(height) / width;
     const uint32_t x_offset = (height > width ? 0.0 : width * (ratio - 1.0) / 2.0);
     const uint32_t y_offset = (height < width ? 0.0 : (height - width) / 2);
-    const double x_scale = fractal.width() / (width * (height > width ? 1.0 : ratio));
-    const double y_scale = (height < width ? 1.0 : ratio) * fractal.height() / height;
-    Surface image(work_space.width(), work_space.height());
+    const long double x_scale = fractal.Width() / (width * (height > width ? 1.0 : ratio));
+    const long double y_scale = (height < width ? 1.0 : ratio) * fractal.Height() / height;
+    Surface image(work_space.Width(), work_space.Height());
 	for (uint32_t y = work_space.min_y; y < work_space.max_y; ++y)
 	{
 		for (uint32_t x = work_space.min_x; x < work_space.max_x; ++x)
@@ -22,9 +22,9 @@ Surface Fractal::Mandelbrot(uint32_t width, uint32_t height, const Window<uint32
             Complex z;
 			while (iteration < max_iteration)
 			{
-                z = z * z + c; // Classic madelbrot
+                z = pow(z, power) + c; // Classic madelbrot = 2
                 //z = pow(z.Abs(), 2.0) + c; // Burning ship
-                if (abs(z) <= escape_r + std::numeric_limits<double>::epsilon())
+                if (abs(z) <= escape_r + std::numeric_limits<long double>::epsilon())
 				    ++iteration;
                 else
                 {
@@ -34,8 +34,8 @@ Surface Fractal::Mandelbrot(uint32_t width, uint32_t height, const Window<uint32
 			}
             if (outside)
             {
-                z = z * z + c;
-                z = z * z + c;
+                z = pow(z, power) + c;
+                z = pow(z, power) + c;
                 float t = (static_cast<float>(iteration + color_offset) - log(log(abs(z))) / log(2)) / (max_iteration * 1.01f);
                 if (t < 0.0f + std::numeric_limits<float>::epsilon())
                     t = 0.0f;
