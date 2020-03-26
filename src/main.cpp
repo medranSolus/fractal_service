@@ -2,6 +2,8 @@
 #include "MPI/Slave.h"
 #include <CL/cl.hpp>
 #include <iostream>
+#include "MPI/Messages.h"
+#include "Net/Server.h"
 
 void show_cl_info();
 
@@ -11,15 +13,60 @@ int main(int argc, char* argv[])
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     //show_cl_info();
-    if (rank == 0)
+    try
     {
-        int stations;
-        MPI_Comm_size(MPI_COMM_WORLD, &stations);
-        rank = MPI::Master(stations - 1).Run();
+        if (rank == 0)
+        {
+            system("mkdir -p jobs");
+            int stations;
+            uint64_t minimal_node_size = 500;
+            int connection_queue_size = 1000;
+            if (argc >= 2)
+                minimal_node_size = atoll(argv[1]);
+            if (argc >= 3)
+                connection_queue_size = atoi(argv[2]);
+            MPI_Comm_size(MPI_COMM_WORLD, &stations);
+            rank = MPI::Master(static_cast<uint32_t>(stations - 2), minimal_node_size).Run(connection_queue_size);
 
+        }
+        else if (rank == 3)
+        {
+            MPI::JobRequest request;
+            request.height = 2000;
+            request.width = 2000;
+            request.token = 616;
+            request.zoom = 2.0;
+            request.offset_x = -1.0;
+            uint64_t tok = 0;
+            Net::Server serv("fractal_server.soc");
+            serv.Listen(1);
+            Net::Client soc("fractal_cluster.soc");
+            sleep(5);
+            soc.Connect();
+            soc.Write(MPI::MessageID::Request);
+            soc.Write(request);
+            soc.Close();
+            sleep(5);
+            do
+            {
+                soc = serv.Accept();
+            } while (!soc.IsConnected());
+            soc.Read(tok);
+            soc.Close();
+            serv.Close();
+            Net::Client soc1("fractal_cluster.soc");
+            soc1.Connect();
+            soc1.Write(MPI::MessageID::Shutdown);
+            soc1.Close();
+            rank = 0;
+        }
+        else
+            rank = MPI::Slave(rank).Run();
     }
-    else
-        rank = MPI::Slave(rank).Run();
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
     MPI_Finalize();
     return rank;
 }

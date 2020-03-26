@@ -4,7 +4,8 @@
 typedef std::complex<long double> Complex;
 
 Surface Fractal::Mandelbrot(uint32_t width, uint32_t height, const Window<uint32_t>& work_space,
-    Window<long double> fractal, long double escape_r, uint16_t max_iteration, uint16_t color_offset, int power) noexcept
+    const Window<long double>& fractal, long double escape_r, uint16_t max_iteration,
+    uint16_t color_offset, const RGB<float>& color_scale, int32_t power) noexcept
 {
     const long double ratio = static_cast<long double>(height) / width;
     const uint32_t x_offset = (height > width ? 0.0 : width * (ratio - 1.0) / 2.0);

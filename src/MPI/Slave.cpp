@@ -20,10 +20,15 @@ namespace MPI
     int Slave::Run()
     {
         Window<long double> fractal_space = { -2.0, 1.0, -1.5, 1.5 };
-        JobRequest request = ReceiveJob();
-        SendImage(Fractal::Mandelbrot(request.width, request.height, request.work_space,
-            fractal_space.Move(request.offset_x / request.zoom, -request.offset_y / request.zoom) * request.zoom,
-            request.escape_r, request.iterations, request.color_offset, request.power), request.token, request.job_id);
+        while (true)
+        {
+            JobRequest request = ReceiveJob();
+            if (request.id == MessageID::Shutdown)
+                break;
+            SendImage(Fractal::Mandelbrot(request.width, request.height, request.work_space,
+                fractal_space.Move(request.offset_x * request.zoom, -request.offset_y * request.zoom) / request.zoom,
+                request.escape_r, request.iterations, request.color_offset, request.channels, request.power), request.token, request.job_id);
+        }
         return 0;
     }
 }

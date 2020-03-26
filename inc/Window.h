@@ -14,4 +14,6 @@ struct Window
 
     constexpr Window operator*(T x) noexcept { return { min_x * x, max_x * x, min_y * x, max_y * x }; }
     constexpr Window operator*=(T x) noexcept { *this = *this * x; return *this; }
+    constexpr Window operator/(T x) noexcept { return { min_x / x, max_x / x, min_y / x, max_y / x }; }
+    constexpr Window operator/=(T x) noexcept { *this = *this / x; return *this; }
 };
