@@ -4,5 +4,5 @@ _instances=1
 if ! [ -z "$1" ]; then
     _instances=$1
 fi
-
-mpirun --hostfile host_file -N $_instances bin/frac_cluster
+cd bin
+mpirun --hostfile ../host_file -N $_instances fractal_cluster

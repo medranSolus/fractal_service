@@ -7,16 +7,19 @@ CXX_FLAGS = -std=c++2a -Wall -MT $@ -MMD -MP -MF dep/$*.d $(INCLUDE) -c
 LD_FLAGS := -lOpenCL -lpng
 
 .PHONY: all
-all: bin/frac_cluster
+all: bin/fractal_cluster
 
-bin/frac_cluster: $(OBJ)
+bin/fractal_cluster: $(OBJ)
 	$(CXX) $(LD_FLAGS) $(OBJ) -o $@
 
 obj/%.obj: src/%.cpp dep/%.d
 	$(CXX) $(CXX_FLAGS) $< -o $@
-	
+
 obj/%.obj: src/MPI/%.cpp dep/%.d
 	$(CXX) $(CXX_FLAGS) -I inc/MPI $< -o $@
+
+obj/%.obj: src/Net/%.cpp dep/%.d
+	$(CXX) $(CXX_FLAGS) -I inc/Net $< -o $@
 
 $(DEP):
 
@@ -24,4 +27,4 @@ include $(wildcard $(DEP))
 
 .PHONY: clean
 clean:
-	@$(RM) -f dep/* obj/* bin/*
+	@$(RM) -rf dep/* obj/* bin/*

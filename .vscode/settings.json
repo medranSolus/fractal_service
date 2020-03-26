@@ -59,6 +59,7 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp",
-        "complex": "cpp"
+        "complex": "cpp",
+        "shared_mutex": "cpp"
     }
 }
