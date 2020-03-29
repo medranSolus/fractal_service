@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 
+#pragma pack(push, 1)
 template<typename T>
 struct RGB
 {
@@ -8,7 +9,7 @@ struct RGB
     T g = static_cast<T>(0);
     T b = static_cast<T>(0);
 };
-
+#pragma pack(pop)
 
 class Color
 {

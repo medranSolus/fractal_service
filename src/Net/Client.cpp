@@ -1,5 +1,4 @@
 #include "Client.h"
-#include "Logger.h"
 #include <thread>
 
 namespace Net
@@ -36,7 +35,7 @@ namespace Net
     {
         if (connected)
         {
-            if (read(file_desc, &value, sizeof(value) - sizeof(value.job_id) - sizeof(value.work_space) - sizeof(value.id)) < 0)
+            if (read(file_desc, &value, sizeof(value) - 3 * sizeof(uint32_t) - sizeof(value.id)) < 0)
             {
                 perror("read");
                 Logger::LogError("Error reading JobRequest from socket!");

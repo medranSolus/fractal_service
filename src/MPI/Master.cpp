@@ -1,5 +1,4 @@
 #include "Master.h"
-#include "Fractal.h"
 #include "Logger.h"
 #include "Net/Server.h"
 #include <algorithm>
@@ -41,25 +40,26 @@ namespace MPI
             if (step < minimal_node_size)
                 step = minimal_node_size;
             request.job_id = 0;
-            request.work_space = { 0, request.width, 0, step };
+            request.min_y = 0;
+            request.max_y = step;
             finished_jobs_mutex.lock();
             finished_jobs.emplace(request.token, JobEntry{ 0 });
             finished_jobs_mutex.unlock();
-            while (request.work_space.max_y + step < request.height)
+            while (request.max_y + step < request.height)
             {
                 InsertJob(request);
                 ++request.job_id;
-                request.work_space.min_y = request.work_space.max_y;
-                request.work_space.max_y += step;
+                request.min_y = request.max_y;
+                request.max_y += step;
             }
-            if (request.height - request.work_space.max_y >= minimal_node_size * 2 / 3)
+            if (request.height - request.max_y >= minimal_node_size * 2 / 3)
             {
-                request.work_space.max_y = request.work_space.min_y + (request.height - request.work_space.min_y) / 2;
+                request.max_y = request.min_y + (request.height - request.min_y) / 2;
                 InsertJob(request);
                 ++request.job_id;
-                request.work_space.min_y = request.work_space.max_y;
+                request.min_y = request.max_y;
             }
-            request.work_space.max_y = request.height;
+            request.max_y = request.height;
             InsertJob(request);
             finished_jobs_mutex.lock();
             finished_jobs.at(request.token).count = request.job_id + 1;
@@ -71,7 +71,8 @@ namespace MPI
             finished_jobs.emplace(request.token, JobEntry{ 1 });
             finished_jobs_mutex.unlock();
             request.job_id = 0;
-            request.work_space = { 0, request.width, 0, request.height };
+            request.min_y = 0;
+            request.max_y = request.height;
             InsertJob(request);
         }
     }

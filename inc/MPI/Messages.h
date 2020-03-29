@@ -1,7 +1,6 @@
 #pragma once
 #include "Surface.h"
 #include "Window.h"
-#include <stdint.h>
 
 namespace MPI
 {
@@ -11,20 +10,21 @@ namespace MPI
 #pragma pack(push, 1)
     struct JobRequest
     {
-        long double escape_r = 2.0;
-        long double zoom = 1.0;
-        long double offset_x = 0.0;
-        long double offset_y = 0.0;
+        double escape_r = 2.0;
+        double zoom = 1.0;
+        double offset_x = 0.0;
+        double offset_y = 0.0;
         uint32_t width;
         uint32_t height;
         int32_t power = 2;
-        uint16_t color_offset = 7;
+        uint16_t color_offset = 5;
         uint16_t iterations = 550;
         uint64_t token;
         RGB<float> channels = { 9.0f, 15.0f, 8.5f };
         uint32_t job_id;
-        Window<uint32_t> work_space;
-        MessageID id = MessageID::Request; // Can be also MessageID::Shutdown
+        uint32_t min_y;
+        uint32_t max_y;
+        MessageID id = MessageID::Request;
     };
 
     struct ImageHeader

@@ -1,6 +1,5 @@
 #pragma once
 #include "Client.h"
-#include <unistd.h>
 
 namespace Net
 {
