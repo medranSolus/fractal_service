@@ -19,8 +19,8 @@ namespace MPI
         int32_t power = 2;
         uint16_t color_offset = 5;
         uint16_t iterations = 550;
-        uint64_t token;
         RGB<float> channels = { 9.0f, 15.0f, 8.5f };
+        uint64_t token;
         uint32_t job_id;
         uint32_t min_y;
         uint32_t max_y;
