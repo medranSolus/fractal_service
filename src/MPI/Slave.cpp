@@ -25,7 +25,7 @@ namespace MPI
                 break;
             SendImage(fractals.Mandelbrot(request.width, request.height, request.min_y, request.max_y,
                 request.offset_x, request.offset_y, request.zoom, request.escape_r, request.iterations,
-                request.color_offset, request.channels, request.power), request.token, request.job_id);
+                request.color_offset, request.channels, request.power, request.id == MessageID::RequestIterative), request.token, request.job_id);
         }
         return 0;
     }

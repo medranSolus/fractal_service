@@ -26,6 +26,7 @@ typedef struct __attribute__ ((packed)) MandelbrotParams
     ushort max_iteration;
     ushort color_offset;
     RGB color_scale;
+    uchar color_iterative;
 } MandelbrotParams;
 
 typedef double2 cpx;
@@ -100,18 +101,26 @@ __kernel void mandelbrot(__global Color* data, __constant MandelbrotParams* para
     {
         z = cpx_pow(&z, params->power);
         z = cpx_add(&z, &c);
-        z = cpx_pow(&z, params->power);
-        z = cpx_add(&z, &c);
-        __private float t = ((float)(iteration + params->color_offset + 2) - log(log(cpx_abs(&z))) / log(2.0f)) / (params->max_iteration * 1.01f);
-        if (t >= FLT_EPSILON)
+        if (params->color_iterative == 1)
         {
-            __private const float g = t * t;
-            __private const float r = g * t;
-            __private const float b = -t + g * 3.0f + r * -3.0f;
-            t *= r;
-            data[offset].r = (uchar)((params->color_scale.r * (-t + r)) * 255);
-            data[offset].g = (uchar)((params->color_scale.g * (g - 2.0f * r + t)) * 255);
-            data[offset].b = (uchar)((-params->color_scale.b * (b + t)) * 255);
+            __private const float index = (float)(iteration + 1) - log(log(cpx_abs(&z))) / log(2.0f);
+            data[offset].r = (uchar)(sin(0.016f * params->color_scale.r * index + 4.0f + 0.5f * (float)(params->color_offset)) * 253 + 2);
+            data[offset].g = (uchar)(sin(0.013f * params->color_scale.g * index + 2.0f + 0.5f * (float)(params->color_offset) * 2.0f / 3.0f) * 253 + 2);
+            data[offset].b = (uchar)(sin(0.01f * params->color_scale.b * index + 1.0f + 0.5f * (float)(params->color_offset) / 3.0f) * 253 + 2);
+        }
+        else
+        {
+            __private float t = ((float)(iteration + params->color_offset + 1) - log(log(cpx_abs(&z))) / log(2.0f)) / (params->max_iteration * 1.01f);
+            if (t >= FLT_EPSILON)
+            {
+                __private const float g = t * t;
+                __private const float r = g * t;
+                __private const float b = -t + g * 3.0f + r * -3.0f;
+                t *= r;
+                data[offset].r = (uchar)((params->color_scale.r * (-t + r)) * 255);
+                data[offset].g = (uchar)((params->color_scale.g * (g - 2.0f * r + t)) * 255);
+                data[offset].b = (uchar)((-params->color_scale.b * (b + t)) * 255);
+            }
         }
     }
 }

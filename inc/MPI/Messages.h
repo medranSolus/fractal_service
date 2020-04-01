@@ -5,7 +5,7 @@
 namespace MPI
 {
     enum Channel : int { Jobs, ImageHeaders, ImageData };
-    enum class MessageID : uint8_t { Shutdown = 66, Request = 42 };
+    enum class MessageID : uint8_t { Shutdown = 66, RequestClassic = 42, RequestIterative = 43 };
 
 #pragma pack(push, 1)
     struct JobRequest
@@ -24,7 +24,7 @@ namespace MPI
         uint32_t job_id;
         uint32_t min_y;
         uint32_t max_y;
-        MessageID id = MessageID::Request;
+        MessageID id = MessageID::RequestClassic;
     };
 
     struct ImageHeader

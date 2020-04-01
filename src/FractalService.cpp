@@ -21,7 +21,7 @@ std::string FractalService::LoadProgram(const std::string& filename)
 
 Surface FractalService::Mandelbrot(uint32_t width, uint32_t height, uint32_t min_y, uint32_t max_y,
     double offset_x, double offset_y, double zoom, double escape_r, uint16_t max_iteration,
-    uint16_t color_offset, const RGB<float>& color_scale, int32_t power) noexcept
+    uint16_t color_offset, const RGB<float>& color_scale, int32_t power, bool color_iterative) noexcept
 {
     const FractalSpace fractal = mandelbrot_space.Move(offset_x * zoom, -offset_y * zoom) / zoom;
     const double ratio = static_cast<double>(height) / width;
@@ -42,6 +42,7 @@ Surface FractalService::Mandelbrot(uint32_t width, uint32_t height, uint32_t min
         max_iteration,
         color_offset,
         color_scale,
+        static_cast<cl_uchar>(color_iterative ? 1 : 0)
     };
     const size_t byte_size = sizeof(Color) * width * work_height;
     cl::Buffer pixel_buffer(cl_context, CL_MEM_WRITE_ONLY | CL_MEM_HOST_READ_ONLY | CL_MEM_USE_HOST_PTR, byte_size, image.GetData(0));

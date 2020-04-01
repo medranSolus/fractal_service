@@ -1,5 +1,6 @@
 #pragma once
 #include "Agent.h"
+#include "Logger.h"
 #include "FractalService.h"
 
 namespace MPI
@@ -14,7 +15,7 @@ namespace MPI
 
     public:
         inline Slave(int rank, const cl::Device& device)
-            : rank(rank), fractals(device) {}
+            : rank(rank), fractals(device) { Logger::LogInfo("Worker " + std::to_string(rank) + " using device: " + device.getInfo<CL_DEVICE_NAME>()); }
 
         int Run();
     };

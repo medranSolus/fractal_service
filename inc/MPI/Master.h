@@ -4,7 +4,6 @@
 #include <unordered_map>
 #include <shared_mutex>
 #include <deque>
-#include <thread>
 #include <atomic>
 
 namespace MPI

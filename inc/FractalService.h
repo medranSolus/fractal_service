@@ -21,6 +21,7 @@ class FractalService
         cl_ushort max_iteration;
         cl_ushort color_offset;
         RGB<float> color_scale;
+        cl_uchar color_iterative;
     };
     #pragma pack(pop)
 
@@ -40,7 +41,7 @@ public:
     
     Surface Mandelbrot(uint32_t width, uint32_t height, uint32_t min_y, uint32_t max_y,
         double offset_x, double offset_y, double zoom, double escape_r, uint16_t max_iteration,
-        uint16_t color_offset, const RGB<float>& color_scale, int32_t power) noexcept;
+        uint16_t color_offset, const RGB<float>& color_scale, int32_t power, bool color_iterative) noexcept;
     Surface Mandelbrot_OLD(uint32_t width, uint32_t height, uint32_t min_y, uint32_t max_y,
         double offset_x, double offset_y, double zoom, double escape_r, uint16_t max_iteration,
         uint16_t color_offset, const RGB<float>& color_scale, int32_t power) noexcept;
