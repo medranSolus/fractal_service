@@ -3,6 +3,7 @@
 #include <limits>
 #include <fstream>
 #include <complex>
+#include <stdexcept>
 typedef std::complex<double> Complex;
 
 std::string FractalService::LoadProgram(const std::string& filename)
@@ -10,9 +11,9 @@ std::string FractalService::LoadProgram(const std::string& filename)
     std::ifstream fin("opencl/" + filename);
     if (!fin.is_open())
     {
-        const std::string error = "Cannot open program \"opencl/" + filename + "\"!";
-        Logger::LogError(error);
-        throw error;
+        const std::string error_msg = "Cannot open program \"opencl/" + filename + "\"!";
+        Logger::LogError(error_msg);
+        throw std::runtime_error(error_msg);
     }
     std::string code(std::istreambuf_iterator<char>(fin), (std::istreambuf_iterator<char>()));
     fin.close();

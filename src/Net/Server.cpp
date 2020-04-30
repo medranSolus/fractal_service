@@ -1,5 +1,5 @@
 #include "Server.h"
-#include <exception>
+#include <stdexcept>
 
 namespace Net
 {
@@ -9,14 +9,16 @@ namespace Net
         if (bind(file_desc, reinterpret_cast<sockaddr*>(&address), sizeof(address)) < 0)
         {
             perror("bind");
-            Logger::LogError("Cannot bind socket to listen!");
-            throw std::string("Cannot bind socket to listen!");
+            const std::string error_msg = "Cannot bind socket to listen! Socket: " + std::string(address.sun_path);
+            Logger::LogError(error_msg);
+            throw std::runtime_error(error_msg);
         }
         else if (listen(file_desc, max_connections) < 0)
         {
             perror("listen");
-            Logger::LogError("Cannot listen on socket!");
-            throw std::string("Cannot listen on socket!");
+            const std::string error_msg = "Cannot listen on socket! Socket: " + std::string(address.sun_path);
+            Logger::LogError(error_msg);
+            throw std::runtime_error(error_msg);
         }
     }
 
@@ -28,8 +30,9 @@ namespace Net
         if (socket < 0)
         {
             perror("accept");
-            Logger::LogError("Error accepting incoming call!");
-            throw std::string("Error accepting incoming call!");
+            const std::string error_msg = "Error accepting incoming call! Socket: " + std::string(address.sun_path);
+            Logger::LogError(error_msg);
+            throw std::runtime_error(error_msg);
         }
         return Client(socket , true);
     }

@@ -1,6 +1,7 @@
 CXX := @mpic++
 SRC := $(shell find src/ -type f -name "*.cpp" -exec basename {} \;)
-OBJ := $(patsubst %.cpp, obj/%.obj, $(SRC))
+OBJ := $(filter-out obj/test.obj, $(patsubst %.cpp, obj/%.obj, $(SRC)))
+TEST_OBJ := $(filter-out obj/main.obj, $(OBJ)) obj/test.obj
 SRC_CL := $(shell find src_cl/ -type f -name "*.cl" -exec basename {} \;)
 OBJ_CL := $(patsubst %.cl, bin/opencl/%.cl, $(SRC_CL))
 DEP := $(SRC:%.cpp=dep/%.d)
@@ -10,6 +11,12 @@ LD_FLAGS := -lOpenCL -lpng
 
 .PHONY: all
 all: create_dirs $(OBJ_CL) bin/fractal_cluster
+
+.PHONY: test
+test: all bin/cluster_test
+
+bin/cluster_test: $(TEST_OBJ)
+	$(CXX) $(LD_FLAGS) $(TEST_OBJ) -o $@
 
 .PHONY: create_dirs
 create_dirs:

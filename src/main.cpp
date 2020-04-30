@@ -11,22 +11,25 @@ int main(int argc, char* argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     try
     {
-        if (rank == 0)
+        int master_rank = 0;
+        if (argc >= 2)
+            master_rank = atoi(argv[1]);
+        if (rank == master_rank)
         {
             system("mkdir -p jobs");
             int stations;
             uint64_t minimal_node_size = 500;
             int connection_queue_size = 1000;
-            if (argc >= 2)
-                minimal_node_size = atoll(argv[1]);
             if (argc >= 3)
-                connection_queue_size = atoi(argv[2]);
+                minimal_node_size = atoll(argv[2]);
+            if (argc == 4)
+                connection_queue_size = atoi(argv[3]);
             MPI_Comm_size(MPI_COMM_WORLD, &stations);
-            rank = MPI::Master(static_cast<uint32_t>(stations - 2), minimal_node_size).Run(connection_queue_size);
+            rank = MPI::Master(master_rank, static_cast<uint32_t>(stations - 1), minimal_node_size).Run(connection_queue_size);
 
         }
         else
-            rank = MPI::Slave(rank, get_cl_device(rank)).Run();
+            rank = MPI::Slave(master_rank, rank, get_cl_device(rank)).Run();
     }
     catch (const std::exception& e)
     {

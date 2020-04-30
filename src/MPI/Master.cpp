@@ -231,19 +231,26 @@ namespace MPI
         JobRequest request;
         request.id = MessageID::Shutdown;
         MPI_Request* status_requests = new MPI_Request[stations];
-        for (uint32_t i = 0; i < stations; ++i)
+        for (int i = 0; i < master_rank; ++i)
+            MPI_Isend(&request, 1, job_request_type, i, Channel::Jobs, MPI_COMM_WORLD, &status_requests[i]);
+        for (uint32_t i = master_rank; i < stations; ++i)
             MPI_Isend(&request, 1, job_request_type, i + 1, Channel::Jobs, MPI_COMM_WORLD, &status_requests[i]);
         for (uint32_t i = 0; i < stations; ++i)
             MPI_Wait(&status_requests[i], MPI_STATUS_IGNORE);
         request_server.Close();
     }
 
-    Master::Master(uint32_t stations, uint64_t minimal_node_size)
-        : stations(stations), minimal_node_size(minimal_node_size), request_server("fractal_cluster.soc")
+    Master::Master(int master_rank, uint32_t stations, uint64_t minimal_node_size)
+        : master_rank(master_rank), stations(stations), minimal_node_size(minimal_node_size), request_server("fractal_cluster.soc")
     {
         free_stations.resize(stations);
-        int i = 1;
-        std::generate(free_stations.begin(), free_stations.end(), [&i]() { return i++; });
+        int i = 0;
+        std::generate(free_stations.begin(), free_stations.end(), [&i, master_rank]()
+        {
+            if (i == master_rank)
+                ++i;
+            return i++;
+        });
     }
 
     Master::~Master()

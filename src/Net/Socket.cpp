@@ -1,6 +1,6 @@
 #include "Socket.h"
 #include "Logger.h"
-#include <exception>
+#include <stdexcept>
 
 namespace Net
 {
@@ -10,8 +10,9 @@ namespace Net
         if (file_desc < 0)
         {
             perror("socket");
-            Logger::LogError("Cannot create socket!");
-            throw std::string("Cannot create socket!");
+            const std::string error_msg = "Cannot create socket: " + name;
+            Logger::LogError(error_msg);
+            throw std::runtime_error(error_msg);
         }
         else
         {

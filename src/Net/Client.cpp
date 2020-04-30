@@ -22,7 +22,7 @@ namespace Net
                     std::this_thread::sleep_for(std::chrono::microseconds(1));
                 }
                 perror("connect");
-                Logger::LogError("Cannot connect to server!");
+                Logger::LogError("Cannot connect to server! Socket: " + std::string(address.sun_path));
                 return false;
             }
             connected = true;
@@ -50,12 +50,12 @@ namespace Net
                     std::this_thread::sleep_for(std::chrono::microseconds(1));
                 }
                 perror("read");
-                Logger::LogError("Error reading JobRequest from socket!");
+                Logger::LogError("Error reading JobRequest from socket: " + std::string(address.sun_path));
                 return false;
             }
             return true;
         }
-        Logger::LogError("Cannot read JobRequest from not connected socket!");
+        Logger::LogError("Cannot read JobRequest from not connected socket: " + std::string(address.sun_path));
         return false;
     }
 }

@@ -48,12 +48,12 @@ namespace Net
                     std::this_thread::sleep_for(std::chrono::microseconds(1));
                 }
                 perror("write");
-                Logger::LogError("Error sending " + std::to_string(sizeof(value)) + " bytes to socket!");
+                Logger::LogError("Error sending " + std::to_string(sizeof(value)) + " bytes to socket: " + std::string(address.sun_path));
                 return false;
             }
             return true;
         }
-        Logger::LogError("Cannot write to not connected socket!");
+        Logger::LogError("Cannot write to not connected socket: " + std::string(address.sun_path));
         return false;
     }
 
@@ -76,12 +76,12 @@ namespace Net
                     std::this_thread::sleep_for(std::chrono::microseconds(1));
                 }
                 perror("read");
-                Logger::LogError("Error reading " + std::to_string(sizeof(value)) + " bytes from socket!");
+                Logger::LogError("Error reading " + std::to_string(sizeof(value)) + " bytes from socket: " + std::string(address.sun_path));
                 return false;
             }
             return true;
         }
-        Logger::LogError("Cannot read from not connected socket!");
+        Logger::LogError("Cannot read from not connected socket: " + std::string(address.sun_path));
         return false;
     }
 }

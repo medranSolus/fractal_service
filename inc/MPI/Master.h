@@ -18,6 +18,7 @@ namespace MPI
             std::unordered_map<uint32_t, std::shared_ptr<Surface>> done;
         };
 
+        int master_rank;
         uint32_t stations;
         const uint64_t minimal_node_size;
         std::atomic_bool cluster_running = false;
@@ -51,7 +52,7 @@ namespace MPI
         void Stop();
 
     public:
-        Master(uint32_t stations, uint64_t minimal_node_size);
+        Master(int master_rank, uint32_t stations, uint64_t minimal_node_size);
         ~Master();
 
         int Run(int connection_queue_size);
