@@ -1,2 +1,6 @@
+# Setup master and slaves according to machines in local network
 # Master
-markbook slots=4
+192.168.0.108 max-slots=3
+
+# Slaves
+192.168.0.45 max-slots=2
