@@ -8,8 +8,8 @@ int main(int argc, char* argv[])
     request.height = argc >= 4 ? abs(atoi(argv[3])) : 2000;
     request.width = argc >= 5 ? abs(atoi(argv[4])) : 2000;
     request.zoom = argc >= 6 ? abs(atof(argv[5])) : 2.0;
-    request.offset_x = argc >= 7 ? abs(atof(argv[6])) : -1.0;
-    request.offset_y = argc >= 8 ? abs(atof(argv[7])) : 0.0;
+    request.offset_x = argc >= 7 ? atof(argv[6]) : -1.0;
+    request.offset_y = argc >= 8 ? atof(argv[7]) : 0.0;
     request.color_offset = argc >= 9 ? abs(atoi(argv[8])) : 5;
     Net::Server serv("fractal_server.soc");
     serv.Listen(1);
