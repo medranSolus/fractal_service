@@ -1,6 +1,6 @@
 #include "Net/Server.h"
 
-// args: TYPE(0=Classic, 1=Iterative) TOKEN HEIGHT WIDTH ZOOM OFFSET_X OFFSET_Y COLOR_OFFSET
+// args: TYPE(0=Classic, 1=Iterative) TOKEN HEIGHT WIDTH ZOOM OFFSET_X OFFSET_Y COLOR_OFFSET POWER ITERATIONS R G B ESCAPE_R
 int main(int argc, char* argv[])
 {
     MPI::JobRequest request;
@@ -11,6 +11,12 @@ int main(int argc, char* argv[])
     request.offset_x = argc >= 7 ? atof(argv[6]) : -1.0;
     request.offset_y = argc >= 8 ? atof(argv[7]) : 0.0;
     request.color_offset = argc >= 9 ? abs(atoi(argv[8])) : 5;
+    request.power = argc >= 10 ? atoi(argv[9]) : 2;
+    request.iterations = argc >= 11 ? abs(atoi(argv[10])) : 550;
+    request.channels.r = argc >= 12? static_cast<float>(atof(argv[11])) : 9.0f;
+    request.channels.g = argc >= 13? static_cast<float>(atof(argv[12])) : 15.0f;
+    request.channels.b = argc >= 14? static_cast<float>(atof(argv[13])) : 8.5f;
+    request.escape_r = argc >= 15 ? abs(atof(argv[14])) : 2.0;
     Net::Server serv("fractal_server.soc");
     serv.Listen(1);
     Net::Client soc("fractal_cluster.soc");
