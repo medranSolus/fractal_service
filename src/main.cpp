@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
             uint64_t minimal_node_size = 500;
             int connection_queue_size = 1000;
             if (argc >= 3)
-                minimal_node_size = atoll(argv[2]);
+                minimal_node_size = abs(atoll(argv[2]));
             if (argc == 4)
                 connection_queue_size = atoi(argv[3]);
             MPI_Comm_size(MPI_COMM_WORLD, &stations);
