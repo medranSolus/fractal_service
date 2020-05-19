@@ -2,7 +2,7 @@
 # Run as root
 
 # Do this only once!
-if [ -z "$1" ]; then
+if ! [ -z "$1" ]; then
     if [ "$1" == "first" ]; then
         echo "/home/mpi_fractal/fractal_cluster *(rw,async,no_root_squash,no_subtree_check)" >> /etc/exports
     fi
