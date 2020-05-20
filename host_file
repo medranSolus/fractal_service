@@ -3,4 +3,4 @@
 192.168.0.108 max-slots=3
 
 # Slaves
-#192.168.0.45 max-slots=2
+192.168.0.45 max-slots=2
