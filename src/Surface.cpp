@@ -3,6 +3,7 @@
 #include <png.h>
 #include <algorithm>
 #include <cstdio>
+#include <sys/stat.h>
 
 Surface::Image::Image(uint32_t width, uint32_t height) noexcept
     : width(width), height(height)
@@ -132,6 +133,7 @@ bool Surface::Save(const std::string& filename) const
     png_free_data(png_write_header, png_info_header, PNG_FREE_ALL, -1);
     png_destroy_write_struct(&png_write_header, nullptr);
     delete[] rows;
-    
+
+    chmod(filename.c_str(), 0777);
 	return true;
 }

@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
             master_rank = atoi(argv[1]);
         if (rank == master_rank)
         {
-            system("mkdir -p jobs");
+            system("mkdir -p jobs; chmod a+rw jobs");
             int stations;
             uint64_t minimal_node_size = 500;
             int connection_queue_size = 1000;
