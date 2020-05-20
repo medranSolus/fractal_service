@@ -60,6 +60,11 @@
         "valarray": "cpp",
         "variant": "cpp",
         "complex": "cpp",
-        "shared_mutex": "cpp"
+        "shared_mutex": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "set": "cpp",
+        "ranges": "cpp",
+        "stop_token": "cpp"
     }
 }

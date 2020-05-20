@@ -21,11 +21,10 @@ namespace MPI
         while (true)
         {
             JobRequest request = ReceiveJob();
-            if (request.id == MessageID::Shutdown)
+            if (request.id == Net::MessageID::Shutdown)
                 break;
-            SendImage(fractals.Mandelbrot(request.width, request.height, request.min_y, request.max_y,
-                request.offset_x, request.offset_y, request.zoom, request.escape_r, request.iterations,
-                request.color_offset, request.channels, request.power, request.id == MessageID::RequestIterative), request.token, request.job_id);
+            SendImage(fractals.Mandelbrot(request.data, request.min_y, request.max_y,
+                request.id == Net::MessageID::RequestIterative), request.data.token, request.job_id);
         }
         Logger::LogInfo("Worker " + std::to_string(rank) + " shutting down.");
         return 0;

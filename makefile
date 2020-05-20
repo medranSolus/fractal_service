@@ -1,46 +1,23 @@
-CXX := @mpic++
-SRC := $(shell find src/ -type f -name "*.cpp" -exec basename {} \;)
-OBJ := $(filter-out obj/test.obj, $(patsubst %.cpp, obj/%.obj, $(SRC)))
-TEST_OBJ := $(filter-out obj/main.obj, $(OBJ)) obj/test.obj
-SRC_CL := $(shell find src_cl/ -type f -name "*.cl" -exec basename {} \;)
-OBJ_CL := $(patsubst %.cl, bin/opencl/%.cl, $(SRC_CL))
-DEP := $(SRC:%.cpp=dep/%.d)
-INCLUDE := -I inc
-CXX_FLAGS = -std=c++2a -Wall -MT $@ -MMD -MP -MF dep/$*.d $(INCLUDE) -c
-LD_FLAGS := -lOpenCL -lpng
+OUT_DIR := bin/
 
 .PHONY: all
-all: create_dirs $(OBJ_CL) bin/fractal_cluster
+all: create_out_dir cluster bench
 
-.PHONY: test
-test: all bin/cluster_test
+.PHONY: create_out_dir
+create_out_dir:
+	@mkdir -p $(OUT_DIR)
 
-bin/cluster_test: $(TEST_OBJ)
-	$(CXX) $(LD_FLAGS) $(TEST_OBJ) -o $@
+.PHONY: cluster
+cluster:
+	@cd cluster && $(MAKE) --no-print-directory ROOT_DIR=$(CURDIR) BIN_DIR=$(OUT_DIR)
 
-.PHONY: create_dirs
-create_dirs:
-	@mkdir -p bin/opencl
-
-bin/opencl/%.cl: src_cl/%.cl
-	@cp $< $@
-
-bin/fractal_cluster: $(OBJ)
-	$(CXX) $(LD_FLAGS) $(OBJ) -o $@
-
-obj/%.obj: src/%.cpp dep/%.d
-	$(CXX) $(CXX_FLAGS) $< -o $@
-
-obj/%.obj: src/MPI/%.cpp dep/%.d
-	$(CXX) $(CXX_FLAGS) -I inc/MPI $< -o $@
-
-obj/%.obj: src/Net/%.cpp dep/%.d
-	$(CXX) $(CXX_FLAGS) -I inc/Net $< -o $@
-
-$(DEP):
-
-include $(wildcard $(DEP))
+.PHONY: bench
+bench:
+	@cd benchmark && $(MAKE) --no-print-directory ROOT_DIR=$(CURDIR) BIN_DIR=$(OUT_DIR)
 
 .PHONY: clean
 clean:
-	@$(RM) -rf dep/* obj/* bin/*
+	@cd common && $(MAKE) clean --no-print-directory
+	@cd cluster && $(MAKE) clean --no-print-directory
+	@cd benchmark && $(MAKE) clean --no-print-directory
+	@$(RM) -rf $(OUT_DIR)*

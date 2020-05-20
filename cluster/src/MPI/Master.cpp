@@ -1,6 +1,5 @@
 #include "Master.h"
 #include "Logger.h"
-#include "Net/Server.h"
 #include <algorithm>
 
 namespace MPI
@@ -33,45 +32,45 @@ namespace MPI
 
     void Master::DispatchJob(JobRequest& request)
     {
-        if (request.height >= 2 * minimal_node_size)
+        if (request.data.height >= 2 * minimal_node_size)
         {
-            uint32_t step = request.height / stations;
+            uint32_t step = request.data.height / stations;
             if (step < minimal_node_size)
                 step = minimal_node_size;
             request.job_id = 0;
             request.min_y = 0;
             request.max_y = step;
             finished_jobs_mutex.lock();
-            finished_jobs.emplace(request.token, JobEntry{ 0 });
+            finished_jobs.emplace(request.data.token, JobEntry{ 0 });
             finished_jobs_mutex.unlock();
-            while (request.max_y + step < request.height)
+            while (request.max_y + step < request.data.height)
             {
                 InsertJob(request);
                 ++request.job_id;
                 request.min_y = request.max_y;
                 request.max_y += step;
             }
-            if (request.height - request.max_y >= minimal_node_size * 2 / 3)
+            if (request.data.height - request.max_y >= minimal_node_size * 2 / 3)
             {
-                request.max_y = request.min_y + (request.height - request.min_y) / 2;
+                request.max_y = request.min_y + (request.data.height - request.min_y) / 2;
                 InsertJob(request);
                 ++request.job_id;
                 request.min_y = request.max_y;
             }
-            request.max_y = request.height;
+            request.max_y = request.data.height;
             InsertJob(request);
             finished_jobs_mutex.lock();
-            finished_jobs.at(request.token).count = request.job_id + 1;
+            finished_jobs.at(request.data.token).count = request.job_id + 1;
             finished_jobs_mutex.unlock();
         }
         else
         {
             finished_jobs_mutex.lock();
-            finished_jobs.emplace(request.token, JobEntry{ 1 });
+            finished_jobs.emplace(request.data.token, JobEntry{ 1 });
             finished_jobs_mutex.unlock();
             request.job_id = 0;
             request.min_y = 0;
-            request.max_y = request.height;
+            request.max_y = request.data.height;
             InsertJob(request);
         }
     }
@@ -85,7 +84,7 @@ namespace MPI
             {
                 JobRequest request;
                 socket.Read(request.id);
-                if (request.id == MessageID::Shutdown)
+                if (request.id == Net::MessageID::Shutdown)
                 {
                     socket.Close();
                     Stop();
@@ -95,7 +94,7 @@ namespace MPI
                     worker_threads_mutex.lock();
                     worker_threads.emplace_back([this](JobRequest request, Net::Client socket)
                     { 
-                        socket.Read(request);
+                        socket.Read(request.data);
                         DispatchJob(request);
                         socket.Close();
                     }, std::move(request), std::move(socket));
@@ -229,7 +228,7 @@ namespace MPI
     {
         cluster_running = false;
         JobRequest request;
-        request.id = MessageID::Shutdown;
+        request.id = Net::MessageID::Shutdown;
         MPI_Request* status_requests = new MPI_Request[stations];
         for (int i = 0; i < master_rank; ++i)
             MPI_Isend(&request, 1, job_request_type, i, Channel::Jobs, MPI_COMM_WORLD, &status_requests[i]);
