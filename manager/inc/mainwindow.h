@@ -10,7 +10,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-enum Resolution : uint8_t { W16H9, W16H10, W21H9, W4H3, Equal };
+enum Resolution : uint8_t { Equal, W4H3, W16H9, W16H10, W21H9 };
 
 class MainWindow : public QMainWindow
 {
@@ -42,6 +42,7 @@ private:
     Net::Server server;
     std::thread listenThread;
     int scrollDelta = 0;
+    bool manager_running = true;
 
     void SetImage(uint64_t token);
     void UpdateImage();

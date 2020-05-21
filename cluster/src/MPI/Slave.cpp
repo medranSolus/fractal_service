@@ -9,7 +9,7 @@ namespace MPI
         return request;
     }
 
-    void Slave::SendImage(const Surface& surface, uint32_t token, uint32_t job_id) const
+    void Slave::SendImage(const Surface& surface, uint64_t token, uint32_t job_id) const
     {
         ImageHeader header { token, job_id, surface.GetWidth(), surface.GetHeight() };
         MPI_Send(&header, 1, image_header_type, master_rank, Channel::ImageHeaders, MPI_COMM_WORLD);

@@ -13,6 +13,7 @@ $(OUT_DIR)fractal_manager:
 	@cmake -S . -B $(BUILD_DIR)
 	@cd $(BUILD_DIR) && $(MAKE) --no-print-directory
 	@mv $(BUILD_DIR)fractal_manager $@
+	@$(RM) -f $(BUILD_DIR)*.a
 
 .PHONY: clean
 clean:

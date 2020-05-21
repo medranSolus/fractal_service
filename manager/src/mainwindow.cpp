@@ -14,21 +14,18 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), server("fractal_server.soc"), listenThread([this]() { this->ListenJobs(); })
 {
+    requestData.token = 0;
     ui->setupUi(this);
     ui->labelImage->installEventFilter(this);
-    ui->comboBoxResolution->addItem("16:9");
-    ui->comboBoxResolution->addItem("16:10");
-    ui->comboBoxResolution->addItem("21:9");
-    ui->comboBoxResolution->addItem("4:3");
-    ui->comboBoxResolution->addItem("1:1");
-    ui->comboBoxResolution->setCurrentIndex(4);
-    UpdateImage();
+    ui->comboBoxResolution->addItems({ "1:1", "4:3", "16:9", "16:10", "21:9" });
 }
 
 MainWindow::~MainWindow()
 {
+    manager_running = false;
     delete ui;
-    listenThread.join();
+    server.Close();
+    std::terminate();
 }
 
 bool MainWindow::eventFilter(QObject* obj, QEvent* event)
@@ -56,7 +53,7 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
     }
     case QEvent::KeyRelease:
     {
-        const double step = 0.01 / requestData.zoom;
+        const double step = 0.05 / requestData.zoom;
         auto& keyEvent = static_cast<QKeyEvent&>(*event);
         switch (keyEvent.key())
         {
@@ -101,7 +98,7 @@ void MainWindow::SetImage(uint64_t token)
     if (image.isNull())
     {
         QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
-            tr("Cannot load %1: %2").arg(QString(token_string.c_str()), reader.errorString()));
+            tr("Cannot load token %1: %2").arg(QString(token_string.c_str()), reader.errorString()));
         return;
     }
 
@@ -144,8 +141,9 @@ void MainWindow::ListenJobs()
             socket.Close();
             emit SetImage(token);
         }
-    } while (true);
-    server.Close();
+        else
+            std::this_thread::sleep_for(std::chrono::microseconds(1));
+    } while (manager_running);
 }
 
 void MainWindow::UpdateResolution(Resolution current, unsigned int scale)

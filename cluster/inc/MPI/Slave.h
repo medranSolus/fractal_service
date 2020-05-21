@@ -12,7 +12,7 @@ namespace MPI
         FractalService fractals;
 
         JobRequest ReceiveJob() const;
-        void SendImage(const Surface& surface, uint32_t token, uint32_t job_id) const;
+        void SendImage(const Surface& surface, uint64_t token, uint32_t job_id) const;
 
     public:
         inline Slave(int master_rank, int rank, const cl::Device& device)
