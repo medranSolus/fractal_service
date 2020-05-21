@@ -3,6 +3,7 @@
 #include <fstream>
 #include <chrono>
 #include <ctime>
+#include <sys/stat.h>
 
 void Logger::Log(Level level, const std::string& msg) noexcept
 {
@@ -33,6 +34,7 @@ void Logger::Log(Level level, const std::string& msg) noexcept
         break;
     }
     }
+    chmod("log.txt", 0666);
     std::fstream fout("log.txt", std::fstream::app | std::fstream::out);
     if (!fout.good())
         std::cerr << time_label << "[ERROR] Cannot open log file \"log.txt\"!" << std::endl;

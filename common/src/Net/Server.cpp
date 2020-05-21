@@ -1,5 +1,6 @@
 #include "Server.h"
 #include <stdexcept>
+#include <sys/stat.h>
 
 namespace Net
 {
@@ -20,6 +21,7 @@ namespace Net
             Logger::LogError(error_msg);
             throw std::runtime_error(error_msg);
         }
+        chmod(address.sun_path, 0777);
     }
 
     Client Server::Accept()
