@@ -22,7 +22,7 @@ bench:
 .PHONY: clean
 clean:
 	@cd common && $(MAKE) clean --no-print-directory
-	@cd cluster && $(MAKE) clean --no-print-directory
+	@cd cluster && $(MAKE) clean --no-print-directory	
 	@cd manager && $(MAKE) clean --no-print-directory
 	@cd benchmark && $(MAKE) clean --no-print-directory
 	@$(RM) -rf $(OUT_DIR)*

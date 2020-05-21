@@ -12,7 +12,7 @@
 #include <cstdio>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), server("/home/mpi_fractal/fractal_cluster/bin/fractal_server.soc"), listenThread([this]() { this->ListenJobs(); })
+    : QMainWindow(parent), ui(new Ui::MainWindow), server("fractal_server.soc"), listenThread([this]() { this->ListenJobs(); })
 {
     ui->setupUi(this);
     ui->labelImage->installEventFilter(this);
@@ -94,32 +94,34 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event)
 void MainWindow::SetImage(uint64_t token)
 {
     const std::string token_string = std::to_string(token);
-    const std::string file = "/home/mpi_fractal/fractal_cluster/bin/jobs/" + token_string + ".png";
+    const std::string file = "jobs/" + token_string + ".png";
     QImageReader reader(file.c_str());
     reader.setAutoTransform(true);
     QImage image = reader.read();
     if (image.isNull())
     {
         QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
-                                 tr("Cannot load %1: %2")
-                                 .arg(QString(token_string.c_str()), reader.errorString()));
+            tr("Cannot load %1: %2").arg(QString(token_string.c_str()), reader.errorString()));
         return;
     }
 
     if (image.colorSpace().isValid())
         image.convertToColorSpace(QColorSpace::SRgb);
-    ui->labelImage->setPixmap(QPixmap::fromImage(std::move(image)).scaled(ui->labelImage->width(), ui->labelImage->height(), Qt::KeepAspectRatio));
-    //remove(file.c_str());
+    ui->labelImage->setPixmap(QPixmap::fromImage(std::move(image)).scaled(ui->labelImage->width(),
+        ui->labelImage->height(), Qt::KeepAspectRatio));
+
+    remove(file.c_str());
 }
 
 void MainWindow::UpdateImage()
 {
-    Net::Client socket("/home/mpi_fractal/fractal_cluster/bin/fractal_cluster.soc");
+    Net::Client socket("fractal_cluster.soc");
     uint8_t i = 5;
     while (!socket.Connect() && i != 0)
         --i;
     if (socket.IsConnected())
     {
+        socket.Write(requestType);
         socket.Write(requestData);
         socket.Close();
     }
@@ -130,7 +132,7 @@ void MainWindow::UpdateImage()
 
 void MainWindow::ListenJobs()
 {
-    server.Listen(100);
+    server.Listen(1000);
     uint64_t token;
     do
     {
@@ -187,14 +189,14 @@ void MainWindow::UpdateResolution(Resolution current, unsigned int scale)
 
 void MainWindow::on_buttonType_clicked()
 {
-    if (requestData.id == MessageID::RequestClassic)
+    if (requestType == Net::MessageID::RequestClassic)
     {
-        requestData.id = MessageID::RequestIterative;
+        requestType = Net::MessageID::RequestIterative;
         ui->buttonType->setText("Iterative");
     }
     else
     {
-        requestData.id = MessageID::RequestClassic;
+        requestType = Net::MessageID::RequestClassic;
         ui->buttonType->setText("Classic");
     }
     UpdateImage();
@@ -214,19 +216,19 @@ void MainWindow::on_spinBoxPower_valueChanged(int arg1)
 
 void MainWindow::on_dialR_valueChanged(int value)
 {
-    requestData.r = value / 10.0f;
+    requestData.channels.r = value / 10.0f;
     UpdateImage();
 }
 
 void MainWindow::on_dialG_valueChanged(int value)
 {
-    requestData.g = value / 10.0f;
+    requestData.channels.g = value / 10.0f;
     UpdateImage();
 }
 
 void MainWindow::on_dialB_valueChanged(int value)
 {
-    requestData.b = value / 10.0f;
+    requestData.channels.b = value / 10.0f;
     UpdateImage();
 }
 
