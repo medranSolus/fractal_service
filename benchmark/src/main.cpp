@@ -1,50 +1,61 @@
 #include "Net/Server.h"
 #include "Net/Data.h"
+#include <map>
+#include <utility>
+#include <iostream>
 
-// args: TYPE(0=Classic, 1=Iterative) TOKEN HEIGHT WIDTH ZOOM OFFSET_X OFFSET_Y COLOR_OFFSET POWER ITERATIONS R G B ESCAPE_R
 int main(int argc, char* argv[])
 {
+    const uint64_t test_size = 100;
+    std::map<uint64_t, std::pair<uint64_t, uint64_t>> results;
+    std::thread listen_thread([test_size, &results]()
+    {
+        Net::Server serv("fractal_server.soc");
+        serv.Listen(test_size);
+        uint64_t token = 0;
+        do
+        {
+            Net::Client soc = serv.Accept();
+            if (soc.IsConnected())
+            {
+                soc.Read(token);
+                soc.Close();
+                struct timespec end;
+                clock_gettime(CLOCK_MONOTONIC, &end);
+                results.at(token).second = end.tv_nsec / 1000000ULL + end.tv_sec * 1000ULL;
+            }
+        } while (token < test_size);
+        
+    });
     Net::JobData request;
-    request.token = argc >= 3 ? abs(atoll(argv[2])) : 9999;
-    request.height = argc >= 4 ? abs(atoi(argv[3])) : 2000;
-    request.width = argc >= 5 ? abs(atoi(argv[4])) : 2000;
-    request.zoom = argc >= 6 ? abs(atof(argv[5])) : 2.0;
-    request.offset_x = argc >= 7 ? atof(argv[6]) : -1.0;
-    request.offset_y = argc >= 8 ? atof(argv[7]) : 0.0;
-    request.color_offset = argc >= 9 ? abs(atoi(argv[8])) : 5;
-    request.power = argc >= 10 ? atoi(argv[9]) : 2;
-    request.iterations = argc >= 11 ? abs(atoi(argv[10])) : 550;
-    request.channels.r = argc >= 12? static_cast<float>(atof(argv[11])) : 9.0f;
-    request.channels.g = argc >= 13? static_cast<float>(atof(argv[12])) : 15.0f;
-    request.channels.b = argc >= 14? static_cast<float>(atof(argv[13])) : 8.5f;
-    request.escape_r = argc >= 15 ? abs(atof(argv[14])) : 2.0;
-    Net::Server serv("fractal_server.soc");
-    serv.Listen(1);
-    Net::Client soc("fractal_cluster.soc");
-    sleep(5);
-    soc.Connect();
-    if (argc >= 2)
+    request.height = 2000U;
+    request.width = 2000U;
+    for (request.token = 1; request.token <= test_size;)
     {
-        if (abs(atoi(argv[1])))
-            soc.Write(Net::MessageID::RequestIterative);
-        else
+        Net::Client soc("fractal_cluster.soc");
+        uint8_t i = 0;
+        while (!soc.Connect() && i < 10U)
+            ++i;
+        if (soc.IsConnected())
+        {
+            struct timespec start;
             soc.Write(Net::MessageID::RequestClassic);
+            soc.Write(request);
+            soc.Close();
+            clock_gettime(CLOCK_MONOTONIC, &start);
+            results.emplace(request.token++, std::make_pair<uint64_t, uint64_t>(start.tv_nsec / 1000000ULL + start.tv_sec * 1000ULL, 0ULL));
+        }
+        else
+            Logger::LogWarning("Trying to connect to cluster in next iteration. Token = " + std::to_string(request.token));
     }
-    else
-        soc.Write(Net::MessageID::RequestClassic);
-    soc.Write(request);
+    listen_thread.join();
+    Net::Client soc("fractal_cluster.soc");
+    soc.Connect();
+    soc.Write(Net::MessageID::Shutdown);
     soc.Close();
-    sleep(5);
-    do
-    {
-        soc = serv.Accept();
-    } while (!soc.IsConnected());
-    soc.Read(request.token);
-    soc.Close();
-    serv.Close();
-    Net::Client soc1("fractal_cluster.soc");
-    soc1.Connect();
-    soc1.Write(Net::MessageID::Shutdown);
-    soc1.Close();
+    uint64_t sum = 0;
+    for (uint64_t i = 1; i <= test_size; ++i)
+        sum += results.at(i).second - results.at(i).first;
+    std::cout << "Avg time: " << sum / test_size << " ms" << std::endl;
     return 0;
 }

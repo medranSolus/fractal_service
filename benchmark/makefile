@@ -17,6 +17,7 @@ OBJ_COM = $(shell find $(OBJ_COM_DIR) -type f -name "*.obj")
 INC := -I inc/
 INC_COM := -I $(COM_DIR)inc/
 CXX_FLAGS = -std=c++2a -Wall -MT $@ -MMD -MP -MF $(DEP_DIR)$*.d $(INC) $(INC_COM) -c
+LD_FLAGS := -pthread
 CXX := @g++
 
 .PHONY: all
@@ -32,7 +33,7 @@ common:
 	@cd $(ROOT_DIR)/common && $(MAKE) --no-print-directory CXX=$(CXX)
 
 $(OUT_DIR)cluster_test: $(OBJ)
-	$(CXX) $(OBJ_COM) $(OBJ) -o $@
+	$(CXX) $(LD_FLAGS) $(OBJ_COM) $(OBJ) -o $@
 
 $(OBJ_DIR)%.obj: $(SRC_DIR)%.cpp $(DEP_DIR)%.d
 	$(CXX) $(CXX_FLAGS) $< -o $@

@@ -14,3 +14,5 @@
   - **OpenCL Platform Info (Additional):** *clinfo*
   - **OpenMPI:** *openmpi*
   - **Creating PNG:** *libpng*
+  - **GUI Manager:** *qt5*
+  - **Build:** *gcc*, *make*, *cmake*

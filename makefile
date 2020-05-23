@@ -2,7 +2,7 @@ OUT_DIR := bin/
 MSG := @echo
 
 .PHONY: all
-all: create_out_dir cluster manager bench
+all: create_out_dir cluster manager
 	$(MSG) "Fractal service operational."
 
 .PHONY: create_out_dir
@@ -19,7 +19,7 @@ manager:
 	@cd manager && $(MAKE) --no-print-directory OUT_DIR=$(CURDIR)/$(OUT_DIR)
 
 .PHONY: bench
-bench:
+bench: cluster
 	@cd benchmark && $(MAKE) --no-print-directory ROOT_DIR=$(CURDIR) BIN_DIR=$(OUT_DIR)
 	$(MSG) "Benchmark created."
 
