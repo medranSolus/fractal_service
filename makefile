@@ -2,7 +2,7 @@ OUT_DIR := bin/
 MSG := @echo
 
 .PHONY: all
-all: create_out_dir cluster manager
+all: cluster
 	$(MSG) "Fractal service operational."
 
 .PHONY: create_out_dir
@@ -10,12 +10,12 @@ create_out_dir:
 	@mkdir -p $(OUT_DIR)
 
 .PHONY: cluster
-cluster:
+cluster: create_out_dir
 	@cd cluster && $(MAKE) --no-print-directory ROOT_DIR=$(CURDIR) BIN_DIR=$(OUT_DIR)
 	$(MSG) "Cluster assembled."
 
 .PHONY: manager
-manager:
+manager: cluster
 	@cd manager && $(MAKE) --no-print-directory OUT_DIR=$(CURDIR)/$(OUT_DIR)
 
 .PHONY: bench

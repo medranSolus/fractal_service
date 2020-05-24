@@ -8,7 +8,7 @@ int main(int argc, char* argv[])
 {
     constexpr uint64_t test_size = 100;
     Net::JobData request;
-    request.height = request.width = 2000U;
+    request.height = request.width = (argc == 2 ? abs(atoi(argv[1])) : 2000U);
     uint64_t sum = 0;
     sleep(10); // Max time for cluster to start
     Net::Server serv("fractal_server.soc");
