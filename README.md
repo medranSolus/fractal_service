@@ -1,4 +1,6 @@
-# Fractal calculation cluster
+# Fractal Service
+
+Cluster based on MPI comunication and OpenCL generation of fractals with GUI manager.
 
 ## Dependecies (Packages names listed for pacman based linux)
   - **OpenCL runtime** (One per platform type)
