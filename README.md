@@ -2,10 +2,10 @@
 
 HPC cluster based on MPI comunication and OpenCL generation of fractals with GUI manager.
 
-## Screens
 ### Architecture of cluster
 ![architecture](screens/cluster.png)
 
+## Generated images
 ### Mandelbrot fractal generated with cluster
 ![fractal](screens/fractal.png)
 
