@@ -1,6 +1,16 @@
 # Fractal Service
 
-Cluster based on MPI comunication and OpenCL generation of fractals with GUI manager.
+HPC cluster based on MPI comunication and OpenCL generation of fractals with GUI manager.
+
+## Screens
+### Architecture of cluster
+![architecture](screens/cluster.png)
+
+### Mandelbrot fractal generated with cluster
+![fractal](screens/fractal.png)
+
+### Biggest fractal created (20k x 20k pixels)
+![mandelbrot](screens/mandelbrot.png)
 
 ## Dependecies (Packages names listed for pacman based linux)
   - **OpenCL runtime** (One per platform type)
