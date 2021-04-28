@@ -10,7 +10,7 @@ HPC cluster based on MPI comunication and OpenCL generation of fractals with GUI
 ![fractal](screens/fractal.png)
 
 ### Biggest fractal created (20k x 20k pixels)
-![mandelbrot](screens/mandelbrot.png)
+[Open in seperate window since it's too big for most browsers.](screens/mandelbrot.png)
 
 ## Dependecies (Packages names listed for pacman based linux)
   - **OpenCL runtime** (One per platform type)
